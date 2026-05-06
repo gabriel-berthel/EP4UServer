@@ -16,7 +16,8 @@ dependencies = [
     "docling-surya",
     "piper-tts",
     "fastapi",
-    "python-multipart"
+    "python-multipart",
+    "uvicorn"
 ]
 
 [project.scripts]
