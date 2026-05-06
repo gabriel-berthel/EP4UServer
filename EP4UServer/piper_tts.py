@@ -1,7 +1,6 @@
 import io
 import wave
 from piper import PiperVoice
-from pydub import AudioSegment
 
 class PiperTTS():
     """
@@ -23,11 +22,4 @@ class PiperTTS():
         # IMPORTANT: reset pointer
         wav_buffer.seek(0)
 
-        # 2. Decode WAV in-memory → AudioSegment
-        audio = AudioSegment.from_file(wav_buffer, format="wav")
-
-        # 3. Encode to MP3 in-memory
-        mp3_buffer = io.BytesIO()
-        audio.export(mp3_buffer, format="mp3")
-
-        return mp3_buffer.getvalue()
+        return wav_buffer.getvalue()
