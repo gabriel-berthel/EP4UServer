@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ep4u-server"
+version = "0.1.0"
+description = "EP4U server for downstream services"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "docling==2.91.0",
+    "docling-surya",
+    "piper-tts"
+]
+
+[project.scripts]
+sshmux = "EP4UServer.server:main"

@@ -1,0 +1,5 @@
+/__init__.py
+/.venv
+*.pickle
+__pycache__/
+*.py[cod]
