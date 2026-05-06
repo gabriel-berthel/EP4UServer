@@ -14,7 +14,8 @@ dependencies = [
     "torchaudio",
     "docling==2.91.0",
     "docling-surya",
-    "piper-tts"
+    "piper-tts",
+    "fastapi"
 ]
 
 [project.scripts]
