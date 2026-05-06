@@ -12,9 +12,9 @@ class DoclingParser():
             ocr_model="suryaocr",
             allow_external_plugins=True,
             ocr_options=SuryaOcrOptions(lang=["en"], force_full_page_ocr=True, use_gpu=True),
-            generate_picture_images=False,
-            generate_table_images=False,
-            generate_parsed_pages=False,
+            generate_picture_images=True,
+            generate_table_images=True,
+            generate_parsed_pages=True,
             do_formula_enrichment=True,
             do_picture_description=False,
             do_chart_extraction=False, # Requires granite
@@ -25,6 +25,9 @@ class DoclingParser():
             ocr_batch_size=48,
             layout_batch_size=48
         )
+
+        pipeline_options.do_table_structure = True
+        pipeline_options.table_structure_options.do_cell_matching = True
         
         self.converter = DocumentConverter(
             format_options={
