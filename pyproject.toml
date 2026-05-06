@@ -18,4 +18,4 @@ dependencies = [
 ]
 
 [project.scripts]
-sshmux = "EP4UServer.server:main"
+ep4userver = "EP4UServer.server:main"
