@@ -17,7 +17,7 @@ class DoclingParser():
             generate_parsed_pages=False,
             do_formula_enrichment=True,
             do_picture_description=False,
-            do_chart_extraction=True, # Requires granite
+            do_chart_extraction=False, # Requires granite
             do_picture_classification = False, # Requires Granite
             images_scale=1.0,
             do_table_structure=True,
