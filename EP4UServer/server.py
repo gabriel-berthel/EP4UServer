@@ -3,6 +3,7 @@ import signal
 import pickle
 import httpx
 import torch
+import os
 
 from pathlib import Path
 from contextlib import asynccontextmanager
