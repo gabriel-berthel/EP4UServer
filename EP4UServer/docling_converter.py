@@ -11,7 +11,7 @@ class DoclingParser():
             do_ocr=True,
             ocr_model="suryaocr",
             allow_external_plugins=True,
-            ocr_options=SuryaOcrOptions(lang=["en"], force_full_page_ocr=True, use_gpu=True),
+            ocr_options=SuryaOcrOptions(lang=["en"], force_full_page_ocr=True, use_gpu=False),
             generate_picture_images=True,
             generate_table_images=True,
             generate_parsed_pages=True,
@@ -20,10 +20,7 @@ class DoclingParser():
             do_chart_extraction=False, # Requires granite
             do_picture_classification = False, # Requires Granite
             images_scale=1.0,
-            do_table_structure=True,
-            accelerator = AcceleratorDevice.CUDA,
-            ocr_batch_size=48,
-            layout_batch_size=48
+            do_table_structure=True
         )
 
         pipeline_options.do_table_structure = True
