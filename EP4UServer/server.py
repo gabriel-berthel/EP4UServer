@@ -4,6 +4,7 @@ import pickle
 import httpx
 import torch
 
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.responses import Response, StreamingResponse
@@ -98,8 +99,9 @@ async def tts(request: Request):
         raise HTTPException(status_code=400, detail="Missing 'text'")
     if not voice:
         raise HTTPException(status_code=400, detail="Missing 'voice'")
-
-    model_path = f"./voices/{voice}.onnx"
+        
+    voice_conf_dir = Path(os.getenv("PIPER_VOICE_DIR", "."))
+    model_path = voice_conf_dir / f"{voice}.onnx"
     
     tts_engine = PiperTTS(model_path=model_path)
     audio_bytes = tts_engine.synthesize(text)
