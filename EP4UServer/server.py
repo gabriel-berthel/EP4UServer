@@ -151,7 +151,7 @@ async def parse_file(file: UploadFile = File(...)):
 # Ollama Forwarding Endpoint
 # ---------------------------
 
-OLLAMA_URL = "http://localhost:11434/v1/chat/completions"
+OLLAMA_URL = "http://localhost:11434/api/chat"
 
 @app.post("/ollama")
 async def forward_to_ollama(request: Request):
