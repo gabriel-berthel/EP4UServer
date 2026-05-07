@@ -18,8 +18,7 @@ dependencies = [
     "piper-tts",
     "fastapi",
     "python-multipart",
-    "uvicorn",
-    "os"
+    "uvicorn"
 ]
 
 [project.scripts]
