@@ -10,31 +10,27 @@ from docling.datamodel.accelerator_options import AcceleratorDevice
 class DoclingParser:
     def __init__(self, use_gpu=True):
         self.request_gpu = use_gpu
-        self._build_pipeline(use_gpu=self._should_use_gpu())
+        self._build_pipeline(self._gpu_is_safe())
         self.converter = self._build_converter()
-        
-    def _should_use_gpu(self):
+
+    def _gpu_is_safe(self):
         if not self.request_gpu:
             return False
-
         if not torch.cuda.is_available():
             return False
-
         free, _ = torch.cuda.mem_get_info()
-        free_gb = free / (1024 ** 3)
+        return (free / (1024 ** 3)) > 8.0
 
-        return free_gb > 2.0
-
-    def _build_pipeline(self, use_gpu: bool):
+    def _build_pipeline(self, use_gpu):
         if use_gpu:
-            self.accelerator = AcceleratorDevice.CUDA
-            ocr_batch = 32
-            layout_batch = 32
+            accelerator = AcceleratorDevice.CUDA
+            ocr_batch = 24
+            layout_batch = 24
             ocr_gpu = True
         else:
-            self.accelerator = AcceleratorDevice.CPU
-            ocr_batch = 6
-            layout_batch = 6
+            accelerator = AcceleratorDevice.CPU
+            ocr_batch = 4
+            layout_batch = 4
             ocr_gpu = False
 
         self.pipeline_options = PdfPipelineOptions(
@@ -55,11 +51,13 @@ class DoclingParser:
             do_picture_classification=False,
             images_scale=1.0,
             do_table_structure=True,
-            accelerator=self.accelerator,
+            accelerator=accelerator,
             ocr_batch_size=ocr_batch,
             layout_batch_size=layout_batch,
         )
-        
+
+        self.pipeline_options.table_structure_options.do_cell_matching = True
+
     def _build_converter(self):
         return DocumentConverter(
             format_options={
@@ -70,22 +68,4 @@ class DoclingParser:
         )
 
     def parse(self, path):
-        try:
-            return self.converter.convert(path).document
-
-        except RuntimeError as e:
-            if "out of memory" in str(e).lower():
-                print("GPU OOM detected → switching to CPU fallback")
-
-                # aggressive cleanup
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                    torch.cuda.ipc_collect()
-
-                # rebuild CPU pipeline
-                self._build_pipeline(use_gpu=False)
-                self.converter = self._build_converter()
-
-                return self.converter.convert(path).document
-
-            raise
+        return self.converter.convert(path).document
