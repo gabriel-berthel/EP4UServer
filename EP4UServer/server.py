@@ -28,10 +28,14 @@ def hash_file_contents(contents: bytes) -> str:
     return h.hexdigest()
 
 def cleanup():
-    print("\nCleaning up GPU memory...")
-    torch.cuda.empty_cache()
-    torch.cuda.ipc_collect()
-    print("Cleanup done.")
+    try:
+        if torch.cuda.is_available():
+            print("\nCleaning up GPU memory...")
+            torch.cuda.empty_cache()
+            torch.cuda.ipc_collect()
+            print("Cleanup done.")
+    except Exception:
+        pass
     
 def wav_to_mp3_bytes(wav_bytes: bytes) -> bytes:
     import subprocess
