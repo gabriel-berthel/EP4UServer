@@ -2,9 +2,6 @@ import os
 
 allow_gpu = os.getenv("DOCLING_ALLOW_GPU", "False").strip().lower() == "true"
 
-if not allow_gpu:
-    os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
