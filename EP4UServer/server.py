@@ -5,6 +5,10 @@ import httpx
 import torch
 import os
 
+# NO GPU USE ATTEMPT.
+if os.getenv("DOCLING_ALLOW_GPU", "False").lower() != "true":
+    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
