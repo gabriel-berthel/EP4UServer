@@ -1,3 +1,4 @@
+import time
 import torch
 
 from docling.datamodel.base_models import InputFormat
@@ -8,18 +9,26 @@ from docling.datamodel.accelerator_options import AcceleratorDevice
 
 
 class DoclingParser:
-    def __init__(self, use_gpu=True):
+    def __init__(self, use_gpu=True, cooldown_seconds=300):
         self.request_gpu = use_gpu
-        self._build_pipeline(self._gpu_is_safe())
+        self.cooldown_seconds = cooldown_seconds
+        self.gpu_disabled_until = 0
+
+        self._build_pipeline(use_gpu=self._should_use_gpu())
         self.converter = self._build_converter()
 
-    def _gpu_is_safe(self):
+    def _gpu_is_available(self):
         if not self.request_gpu:
             return False
         if not torch.cuda.is_available():
             return False
+
+        now = time.time()
+        if now < self.gpu_disabled_until:
+            return False
+
         free, _ = torch.cuda.mem_get_info()
-        return (free / (1024 ** 3)) > 8.0
+        return (free / (1024 ** 3)) > 4.0
 
     def _build_pipeline(self, use_gpu):
         if use_gpu:
@@ -67,5 +76,25 @@ class DoclingParser:
             }
         )
 
+    def _switch_to_cpu_and_cooldown(self):
+        self.gpu_disabled_until = time.time() + self.cooldown_seconds
+        self._build_pipeline(use_gpu=False)
+        self.converter = self._build_converter()
+
+    def _should_use_gpu(self):
+        return self._gpu_is_available()
+
     def parse(self, path):
-        return self.converter.convert(path).document
+        try:
+            return self.converter.convert(path).document
+
+        except RuntimeError as e:
+            if "out of memory" in str(e).lower():
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                    torch.cuda.ipc_collect()
+
+                self._switch_to_cpu_and_cooldown()
+                return self.converter.convert(path).document
+
+            raise
