@@ -10,7 +10,7 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_surya import SuryaOcrOptions
-
+import multiprocessing
 
 class DoclingParser:
     def __init__(self):
@@ -34,7 +34,7 @@ class DoclingParser:
             generate_picture_images=True,
             generate_table_images=True,
             generate_parsed_pages=True,
-            do_formula_enrichment=True,
+            do_formula_enrichment=False,
             do_picture_description=False,
             do_chart_extraction=False,
             do_picture_classification=False,
@@ -47,13 +47,13 @@ class DoclingParser:
             layout_batch_size=batch,
         )
 
-        self.pipeline_options.table_structure_options.do_cell_matching = True
+        self.pipeline_options.table_structure_options.do_cell_matching = False
 
         self.pipeline_options.accelerator_options = AcceleratorOptions(
             device=(
                 AcceleratorDevice.CUDA if self.allow_gpu else AcceleratorDevice.CPU
             ),
-            num_threads=4
+            num_threads=multiprocessing.cpu_count()
         )
 
     def _build_converter(self):
